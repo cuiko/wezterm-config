@@ -1,9 +1,3 @@
-local bar_bg = "#222436"
-local normal_tab_bg = "#3b4261"
-local normal_tab_fg = "#7aa2f7"
-local active_tab_bg = "#7aa2f7"
-local active_tab_fg = "#3b4261"
-
 -- Equivalent to POSIX basename(3)
 -- Given "/foo/bar" returns "bar"
 -- Given "c:\\foo\\bar" returns "bar"
@@ -26,11 +20,18 @@ local function tab_title(tab_info)
 	local short = 5
 	if #title > short * 2 then
 		title = string.sub(title, 1, short) .. "…" .. string.sub(title, -short)
+		-- title = string.sub(title, 1, short * 2)
 	end
 
 	local pad = 2
 	return string.format(string.rep(" ", pad) .. "%d: %s" .. string.rep(" ", pad), tab_info.tab_index + 1, title)
 end
+
+local bar_bg = "#222436"
+local normal_tab_bg = "#3b4261"
+local normal_tab_fg = "#7aa2f7"
+local active_tab_bg = "#7aa2f7"
+local active_tab_fg = "#3b4261"
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
 	local cells = {}
@@ -82,6 +83,85 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 	return wezterm.format(cells)
 end)
 
+local integrated_buttons_focused = {
+	window_close = wezterm.format({
+		{ Foreground = { Color = "#ef6c5b" } },
+		{ Text = "‍" },
+		"ResetAttributes",
+	}),
+	window_close_hover = wezterm.format({
+		{ Foreground = { Color = "#ef6c5b" } },
+		{ Text = "‍󰅙" },
+		"ResetAttributes",
+	}),
+
+	window_hide = wezterm.format({
+		{ Foreground = { Color = "#f4c030" } },
+		{ Text = "‍" },
+		"ResetAttributes",
+	}),
+	window_hide_hover = wezterm.format({
+		{ Foreground = { Color = "#f4c030" } },
+		{ Text = "‍󰍶" },
+		"ResetAttributes",
+	}),
+
+	window_maximize = wezterm.format({
+		{ Foreground = { Color = "#56c138" } },
+		{ Text = "‍ " },
+		"ResetAttributes",
+	}),
+	window_maximize_hover = wezterm.format({
+		{ Foreground = { Color = "#56c138" } },
+		{ Text = "‍󰐗 " },
+		"ResetAttributes",
+	}),
+}
+local integrated_buttonsl_unfocused = {
+	window_close = wezterm.format({
+		{ Foreground = { Color = "#3a3a44" } },
+		{ Text = "‍" },
+		"ResetAttributes",
+	}),
+	window_close_hover = wezterm.format({
+		{ Foreground = { Color = "#3a3a44" } },
+		{ Text = "‍󰅙" },
+		"ResetAttributes",
+	}),
+
+	window_hide = wezterm.format({
+		{ Foreground = { Color = "#3a3a44" } },
+		{ Text = "‍" },
+		"ResetAttributes",
+	}),
+	window_hide_hover = wezterm.format({
+		{ Foreground = { Color = "#3a3a44" } },
+		{ Text = "‍󰍶" },
+		"ResetAttributes",
+	}),
+
+	window_maximize = wezterm.format({
+		{ Foreground = { Color = "#3a3a44" } },
+		{ Text = "‍ " },
+		"ResetAttributes",
+	}),
+	window_maximize_hover = wezterm.format({
+		{ Foreground = { Color = "#3a3a44" } },
+		{ Text = "‍󰐗 " },
+		"ResetAttributes",
+	}),
+}
+
+wezterm.on("update-status", function(window, pane)
+	local overrides = window:get_config_overrides() or {}
+	if window:is_focused() then
+		overrides.tab_bar_style = integrated_buttons_focused
+	else
+		overrides.tab_bar_style = integrated_buttonsl_unfocused
+	end
+	window:set_config_overrides(overrides)
+end)
+
 return {
 	enable_tab_bar = true,
 	use_fancy_tab_bar = false,
@@ -100,38 +180,5 @@ return {
 	tab_bar_style = {
 		new_tab = " 󰐖",
 		new_tab_hover = " 󰐖",
-
-		window_close = wezterm.format({
-			{ Foreground = { Color = "#ef6c5b" } },
-			{ Text = "‍" },
-			"ResetAttributes",
-		}),
-		window_close_hover = wezterm.format({
-			{ Foreground = { Color = "#ef6c5b" } },
-			{ Text = "‍󰅙" },
-			"ResetAttributes",
-		}),
-
-		window_hide = wezterm.format({
-			{ Foreground = { Color = "#f4c030" } },
-			{ Text = "‍" },
-			"ResetAttributes",
-		}),
-		window_hide_hover = wezterm.format({
-			{ Foreground = { Color = "#f4c030" } },
-			{ Text = "‍󰍶" },
-			"ResetAttributes",
-		}),
-
-		window_maximize = wezterm.format({
-			{ Foreground = { Color = "#56c138" } },
-			{ Text = "‍ " },
-			"ResetAttributes",
-		}),
-		window_maximize_hover = wezterm.format({
-			{ Foreground = { Color = "#56c138" } },
-			{ Text = "‍󰐗 " },
-			"ResetAttributes",
-		}),
 	},
 }

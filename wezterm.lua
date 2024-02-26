@@ -23,7 +23,7 @@ return require("util").load(config, {
 	"ui.colorscheme",
 	"ui.font",
 	"ui.tab",
-	"ui.status",
+	"ui.workspace",
 	"ui.window",
 	"ui.command_palette",
 	-- keymaps

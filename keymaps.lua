@@ -1,7 +1,7 @@
 local action = wezterm.action
 
 local workspaces = {
-	"Local",
+	"local",
 }
 
 function workspaces:default()
@@ -10,10 +10,11 @@ end
 
 return {
 	default_workspace = workspaces:default(),
-	unix_domains = {
-		{ name = workspaces:default() },
-	},
-	default_gui_startup_args = { "connect", workspaces:default() },
+	-- unix_domains = {
+	-- 	{ name = workspaces:default() },
+	-- },
+	-- default_gui_startup_args = { "connect", workspaces:default() },
+
 	disable_default_key_bindings = false,
 	leader = {
 		key = "z",

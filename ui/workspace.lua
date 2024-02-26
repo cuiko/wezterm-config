@@ -47,4 +47,25 @@ wezterm.on("update-right-status", function(window, pane)
 	window:set_right_status(wezterm.format(elements))
 end)
 
+-- change leader key if in tmux
+local keymaps = require("keymaps")
+wezterm.on("user-var-changed", function(window, pane, name, value)
+	local user_vars = pane:get_user_vars()
+	local is_tmux = (user_vars.WEZTERM_IN_TMUX and user_vars.WEZTERM_IN_TMUX ~= "0")
+		or (user_vars.WEZTERM_PROG and user_vars.WEZTERM_PROG:match("^tmux"))
+	local overrides = window:get_config_overrides() or {}
+	if is_tmux then
+		-- change to other leader
+		overrides.leader = {
+			key = "a",
+			mods = "CTRL",
+			timeout_milliseconds = 1000,
+		}
+	else
+		-- use default leader
+		overrides.leader = keymaps.leader
+	end
+	window:set_config_overrides(overrides)
+end)
+
 return {}
