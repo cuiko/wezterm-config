@@ -7,6 +7,12 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
+-- tempfile=$(mktemp) \
+--   && curl -o $tempfile https://raw.githubusercontent.com/wez/wezterm/main/termwiz/data/wezterm.terminfo \
+--   && tic -x -o ~/.terminfo $tempfile \
+--   && rm $tempfile
+config.term = "wezterm"
+
 -- cursor
 config.default_cursor_style = "BlinkingBlock"
 config.cursor_thickness = "1.8"
