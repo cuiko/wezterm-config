@@ -162,7 +162,78 @@ wezterm.on("update-status", function(window, pane)
 	window:set_config_overrides(overrides)
 end)
 
-return {
+wezterm.on("format-window-title", function(tab, pane, tabs, panes, config)
+	return tab.active_pane.title
+end)
+
+wezterm.on("update-right-status", function(window, pane)
+	local cells = {}
+
+	if window:leader_is_active() then
+		table.insert(
+			cells,
+			wezterm.format({
+				{ Text = "⌨️" },
+			})
+		)
+	end
+
+	table.insert(cells, window:active_workspace())
+
+	local text_bg = "#5168AB"
+	local text_fg = "#ffffff"
+
+	local elements = {}
+	local num_cells = 0
+
+	local function push(text, is_last)
+		local cell_no = num_cells + 1
+		if cell_no == 1 then
+			table.insert(elements, { Foreground = { Color = text_bg } })
+			table.insert(elements, { Text = "" })
+		end
+
+		table.insert(elements, { Foreground = { Color = text_fg } })
+		table.insert(elements, { Background = { Color = text_bg } })
+		table.insert(elements, { Text = " " .. text .. " " })
+
+		if not is_last then
+			-- table.insert(elements, { Foreground = { Color = colors[cell_no + 1] } })
+			-- table.insert(elements, { Text = SOLID_LEFT_ARROW })
+		end
+
+		num_cells = num_cells + 1
+	end
+
+	while #cells > 0 do
+		local cell = table.remove(cells, 1)
+		push(cell, #cells == 0)
+	end
+
+	window:set_right_status(wezterm.format(elements))
+end)
+
+-- change leader key if in tmux
+wezterm.on("user-var-changed", function(window, pane, name, value)
+	local user_vars = pane:get_user_vars()
+	local is_tmux = (user_vars.WEZTERM_IN_TMUX and user_vars.WEZTERM_IN_TMUX ~= "0")
+		or (user_vars.WEZTERM_PROG and user_vars.WEZTERM_PROG:match("^tmux"))
+	local overrides = window:get_config_overrides() or {}
+	if is_tmux then
+		-- change to other leader
+		overrides.leader = {
+			key = "a",
+			mods = "CTRL",
+			timeout_milliseconds = 1000,
+		}
+	else
+		-- use default leader
+		overrides.leader = require("keymaps").leader
+	end
+	window:set_config_overrides(overrides)
+end)
+
+local M = {
 	enable_tab_bar = true,
 	use_fancy_tab_bar = false,
 	tab_max_width = 20,
@@ -181,4 +252,41 @@ return {
 		new_tab = " 󰐖",
 		new_tab_hover = " 󰐖",
 	},
+
+	-- integrated button
+	window_decorations = "RESIZE|INTEGRATED_BUTTONS",
+	integrated_title_button_style = "Windows",
+	integrated_title_button_alignment = "Left",
+	integrated_title_buttons = { "Close", "Hide", "Maximize" },
+
+	window_close_confirmation = "AlwaysPrompt",
+	skip_close_confirmation_for_processes_named = {
+		-- default
+		"bash",
+		"sh",
+		"zsh",
+		"fish",
+		"tmux",
+		"nu",
+		"cmd.exe",
+		"pwsh.exe",
+		"powershell.exe",
+		-- custom
+	},
+
+	-- padding
+	window_padding = {
+		left = "20",
+		right = "0",
+		top = "10",
+		bottom = "0",
+	},
+
+	default_workspace = "local",
+	-- unix_domains = {
+	-- 	{ name = "local" },
+	-- },
+	-- default_gui_startup_args = { "connect", "local" },
 }
+
+return M
