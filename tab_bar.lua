@@ -27,7 +27,7 @@ local function tab_title(tab_info)
 	return string.format(string.rep(" ", pad) .. "%d: %s" .. string.rep(" ", pad), tab_info.tab_index + 1, title)
 end
 
-local bar_bg = "#222436"
+local bar_bg = "#192330"
 local normal_tab_bg = "#3b4261"
 local normal_tab_fg = "#7aa2f7"
 local active_tab_bg = "#7aa2f7"

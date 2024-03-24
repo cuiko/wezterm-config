@@ -110,7 +110,14 @@ local default_keymaps = {
 		key = "f",
 		mods = "SUPER",
 		action = action.Search({
-			"CaseSensitiveString",
+			CaseInSensitiveString = "",
+		}),
+	},
+	{
+		key = "f",
+		mods = "SUPER|SHIFT",
+		action = action.Search({
+			CaseSensitiveString = "",
 		}),
 	},
 }

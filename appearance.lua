@@ -1,6 +1,6 @@
 return {
 	-- colose scheme
-	color_scheme = "Tokyo Night Moon",
+	color_scheme = "nightfox",
 
 	-- command palette
 	command_palette_rows = 10,
